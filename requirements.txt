@@ -1,0 +1,7 @@
+highway-env==1.10.2
+gymnasium
+stable-baselines3==2.7.1
+torch
+numpy
+matplotlib
+opencv-python
