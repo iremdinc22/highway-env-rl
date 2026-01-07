@@ -1,4 +1,17 @@
-venv/
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.env
+
+# Virtual env
+venv/
+.venv/
+
+# Training outputs
+artifacts/
+videos/
+
+# OS
 .DS_Store

@@ -1,0 +1,30 @@
+default:
+  duration: 40
+  policy_frequency: 15
+  simulation_frequency: 15
+  lanes_count: 4
+  vehicles_count: 35
+  controlled_vehicles: 1
+
+merge-v0:
+  vehicles_count: 35
+
+roundabout-v0:
+  vehicles_count: 30
+
+intersection-v0:
+  vehicles_count: 30
+
+parking-v0:
+  duration: 60
+  policy_frequency: 5
+  simulation_frequency: 15
+  lanes_count: 2
+  vehicles_count: 20
+
+racetrack-v0:
+  duration: 80
+  policy_frequency: 10
+  simulation_frequency: 30
+  lanes_count: 4
+  vehicles_count: 30
