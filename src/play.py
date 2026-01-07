@@ -72,12 +72,12 @@ def main() -> None:
     # ✅ Create environment
     env = gym.make(
         args.env_id,
-        render_mode="human",
+        render_mode="rgb_array",
         config=env_config,
     )
 
     # 🎥 VIDEO RECORDING (env-id bazlı klasör)
-    video_dir = Path("videos") / args.env_id
+    video_dir = Path("artifacts") / "videos" / args.env_id
     video_dir.mkdir(parents=True, exist_ok=True)
 
     env = RecordVideo(
