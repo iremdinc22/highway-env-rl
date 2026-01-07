@@ -1,7 +1,20 @@
-highway-env==1.10.2
+# Core RL & simulation
 gymnasium
+highway-env==1.10.2
 stable-baselines3==2.7.1
+
+# Deep learning
 torch
+
+# Numerical & plotting
 numpy
 matplotlib
+
+# Rendering & video
+pygame
 opencv-python
+
+# Video recording
+moviepy
+imageio
+imageio-ffmpeg
