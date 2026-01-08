@@ -11,6 +11,7 @@ merge-v0:
 
 roundabout-v0:
   vehicles_count: 30
+  #offroad_terminal: True 
 
 intersection-v0:
   vehicles_count: 30
@@ -20,7 +21,9 @@ parking-v0:
   policy_frequency: 5
   simulation_frequency: 15
   lanes_count: 2
-  vehicles_count: 20
+  vehicles_count: 10
+  high_speed_reward: 0
+  collision_reward: -80
 
 racetrack-v0:
   duration: 80
