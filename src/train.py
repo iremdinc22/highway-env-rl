@@ -64,10 +64,13 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    cfg = TrainConfig(env_id=args.env_id, seed=args.seed)
+    # 🔹 KRİTİK DEĞİŞİKLİK: Akıllı yapılandırıcıyı çağırıyoruz.
+    # Bu sayede parking-v0 için 600k timesteps ve özel parametreler devreye girer.
+    cfg = TrainConfig.get_config(env_id=args.env_id, seed=args.seed)
 
-    total_timesteps = args.timesteps or cfg.total_timesteps
-    save_half_at = args.half_at or cfg.save_half_at
+    # Komut satırından manuel değer girilmediyse, config'deki (get_config ile belirlenen) değeri kullan
+    total_timesteps = args.timesteps if args.timesteps is not None else cfg.total_timesteps
+    save_half_at = args.half_at if args.half_at is not None else cfg.save_half_at
 
     env_config: Dict[str, Any] = {}
     if args.preset_yaml:
@@ -88,10 +91,12 @@ def main() -> None:
     # AUTO POLICY
     obs_space = env.observation_space
     policy = "MultiInputPolicy" if isinstance(obs_space, DictSpace) else "MlpPolicy"
-    print(f"[INFO] observation_space={obs_space}")
+    print(f"[INFO] env_id={cfg.env_id}")
+    print(f"[INFO] total_timesteps={total_timesteps}")
+    print(f"[INFO] batch_size={cfg.batch_size}, ent_coef={cfg.ent_coef}")
     print(f"[INFO] selected policy={policy}")
 
-    #  MODEL
+    # MODEL
     model = PPO(
         policy,
         env,
@@ -113,45 +118,37 @@ def main() -> None:
     half_name = f"{cfg.save_half_name}_{env_tag}"
     final_name = f"{cfg.save_final_name}_{env_tag}"
 
-    # Ensure we save something even if interrupted
     try:
-        # Train until half, save
-        model.learn(total_timesteps=save_half_at, callback=reward_logger)
-        model.save(models_dir / half_name)
+        # 1. Aşama: Yarısına kadar eğit ve kaydet
+        if save_half_at > 0:
+            print(f"[INFO] Training phase 1: 0 to {save_half_at}")
+            model.learn(total_timesteps=save_half_at, callback=reward_logger)
+            model.save(models_dir / half_name)
 
-        # Continue to final
+        # 2. Aşama: Kalan kısmı tamamla
         remaining = total_timesteps - save_half_at
         if remaining > 0:
+            print(f"[INFO] Training phase 2: {save_half_at} to {total_timesteps}")
             model.learn(total_timesteps=remaining, callback=reward_logger)
 
         model.save(models_dir / final_name)
 
     finally:
-        # Backup save (best-effort) — in case of Ctrl+C / crash
         try:
             model.save(models_dir / f"{final_name}_backup")
         except Exception:
             pass
         env.close()
 
-    # Plot reward curve (if we captured any)
+    # Ödül grafiğini çiz
     if reward_logger.episode_rewards:
         plot_rewards(
             reward_logger.episode_rewards,
             plots_dir / f"reward_curve_{env_tag}.png",
         )
-    else:
-        print("Warning: No episode rewards captured. (Still saved models.)")
 
-    print("\nSaved artifacts:")
-    print(f"- Models: {models_dir}")
-    print(f"  - {half_name}.zip")
-    print(f"  - {final_name}.zip")
-    print(f"  - {final_name}_backup.zip (if created)")
-    print(f"- Plot:   {plots_dir / f'reward_curve_{env_tag}.png'}")
-    if args.preset_yaml:
-        print(f"- Preset YAML: {args.preset_yaml}")
-        print(f"- Effective env_config for {cfg.env_id}: {env_config}")
+    print(f"\n[SUCCESS] Training finished for {cfg.env_id}.")
+    print(f"- Final Model: {models_dir / final_name}.zip")
         
   
 if __name__ == "__main__":

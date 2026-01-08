@@ -2,6 +2,7 @@ from __future__ import annotations
 import gymnasium as gym
 import numpy as np
 from typing import Any, Dict, Tuple
+from dataclasses import dataclass, replace
 
 class ParkingRewardShaping(gym.Wrapper):
     """
@@ -15,10 +16,10 @@ class ParkingRewardShaping(gym.Wrapper):
     def __init__(
         self,
         env: gym.Env,
-        w_dist: float = 2.0,
-        w_alignment: float = 1.0,
-        collision_penalty: float = 20.0,
-        success_bonus: float = 20.0,
+        w_dist: float = 0.2,
+        w_alignment: float = 0.2,
+        collision_penalty: float = 5.0,
+        success_bonus: float = 10.0,
         speed_threshold: float = 0.3
     ):
         super().__init__(env)

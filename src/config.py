@@ -1,5 +1,5 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 
 @dataclass(frozen=True)
@@ -28,4 +28,20 @@ class TrainConfig:
     # saving
     save_final_name: str = "ppo_final"
     save_half_name: str = "ppo_half"
+    
+    # --- YENİ: Parking İçin Akıllı Yapılandırıcı ---
+    @classmethod
+    def get_config(cls, env_id: str, **kwargs) -> TrainConfig:
+        config = cls(env_id=env_id, **kwargs)
+        
+        if env_id == "parking-v0":
+            return replace(
+                config, 
+                total_timesteps=1_000_000, # En az 1 milyon yapmalısın
+                save_half_at=500_000,
+                batch_size=256,            # 128'den 256'ya çıkardık (daha kararlı öğrenme)
+                ent_coef=0.02,             # 0.01'den 0.02'ye çıkardık (daha fazla rastgele hareket edip hedefi bulsun)
+                learning_rate=5e-4         # Biraz daha hızlı öğrenme
+            )
+        return config
 

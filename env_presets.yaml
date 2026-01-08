@@ -17,13 +17,13 @@ intersection-v0:
   vehicles_count: 30
 
 parking-v0:
-  duration: 60
+  duration: 100            # Agent'a düşünmesi için daha fazla süre ver
   policy_frequency: 5
   simulation_frequency: 15
   lanes_count: 2
-  vehicles_count: 10
+  vehicles_count: 0        # Etrafta başka araç olmasın, boş alanda öğrensin
   high_speed_reward: 0
-  collision_reward: -80
+  collision_reward: -5     # Çarptığında canı yansın ki duvara sürtünerek park etmesin
 
 racetrack-v0:
   duration: 80
