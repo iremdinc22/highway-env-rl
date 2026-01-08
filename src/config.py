@@ -40,8 +40,8 @@ class TrainConfig:
                 total_timesteps=1_000_000, # En az 1 milyon yapmalısın
                 save_half_at=500_000,
                 batch_size=256,            # 128'den 256'ya çıkardık (daha kararlı öğrenme)
-                ent_coef=0.02,             # 0.01'den 0.02'ye çıkardık (daha fazla rastgele hareket edip hedefi bulsun)
-                learning_rate=5e-4         # Biraz daha hızlı öğrenme
+                ent_coef=0.005,            # 0.02'den 0.005'e düşürdük (titremeyi azaltır)
+                learning_rate=1e-4         # 5e-4'ten 1e-4'e düşürdük (hassas park için)
             )
         return config
 
