@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 import argparse
@@ -36,9 +37,6 @@ def resolve_env_config(env_id: str, presets: Dict[str, Dict[str, Any]]) -> Dict[
     return base
 
 
-InfoType = Union[Dict[str, Any], Sequence[Dict[str, Any]]]
-
-
 class EpisodeRewardLogger(BaseCallback):
     def __init__(self) -> None:
         super().__init__()
@@ -64,14 +62,13 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    # 🔹 KRİTİK DEĞİŞİKLİK: Akıllı yapılandırıcıyı çağırıyoruz.
-    # Bu sayede parking-v0 için 600k timesteps ve özel parametreler devreye girer.
+    # 1. Config Yapılandırması
     cfg = TrainConfig.get_config(env_id=args.env_id, seed=args.seed)
 
-    # Komut satırından manuel değer girilmediyse, config'deki (get_config ile belirlenen) değeri kullan
     total_timesteps = args.timesteps if args.timesteps is not None else cfg.total_timesteps
     save_half_at = args.half_at if args.half_at is not None else cfg.save_half_at
 
+    # 2. Ortam Hazırlığı
     env_config: Dict[str, Any] = {}
     if args.preset_yaml:
         presets = load_env_presets(Path(args.preset_yaml))
@@ -84,52 +81,63 @@ def main() -> None:
     models_dir.mkdir(parents=True, exist_ok=True)
     plots_dir.mkdir(parents=True, exist_ok=True)
 
-    # ENV
     env = make_env(cfg.env_id, cfg.seed, env_config=env_config)
     env = Monitor(env)
 
-    # AUTO POLICY
+    # 3. Model Belirleme (Yükleme veya Yeni Oluşturma)
     obs_space = env.observation_space
     policy = "MultiInputPolicy" if isinstance(obs_space, DictSpace) else "MlpPolicy"
+    
+    final_model_path = models_dir / f"{cfg.save_final_name}_{env_tag}.zip"
+    
     print(f"[INFO] env_id={cfg.env_id}")
     print(f"[INFO] total_timesteps={total_timesteps}")
     print(f"[INFO] batch_size={cfg.batch_size}, ent_coef={cfg.ent_coef}")
-    print(f"[INFO] selected policy={policy}")
 
-    # MODEL
-    model = PPO(
-        policy,
-        env,
-        learning_rate=cfg.learning_rate,
-        gamma=cfg.gamma,
-        n_steps=cfg.n_steps,
-        batch_size=cfg.batch_size,
-        n_epochs=cfg.n_epochs,
-        clip_range=cfg.clip_range,
-        gae_lambda=cfg.gae_lambda,
-        ent_coef=cfg.ent_coef,
-        verbose=1,
-        seed=cfg.seed,
-        device="auto",
-    )
+    if final_model_path.exists():
+        # 🔹 RESUME: Eski modeli yükle, yeni parametreleri uygula
+        print(f"[INFO] Eski model bulundu: {final_model_path}. Uzerine egitiliyor...")
+        model = PPO.load(
+            final_model_path, 
+            env=env, 
+            learning_rate=cfg.learning_rate, 
+            ent_coef=cfg.ent_coef,
+            custom_objects={"batch_size": cfg.batch_size}
+        )
+    else:
+        # 🔹 START: Yeni model oluştur
+        print("[INFO] Eski model bulunamadı. SIFIRDAN başlanıyor...")
+        model = PPO(
+            policy,
+            env,
+            learning_rate=cfg.learning_rate,
+            gamma=cfg.gamma,
+            n_steps=cfg.n_steps,
+            batch_size=cfg.batch_size,
+            n_epochs=cfg.n_epochs,
+            clip_range=cfg.clip_range,
+            gae_lambda=cfg.gae_lambda,
+            ent_coef=cfg.ent_coef,
+            verbose=1,
+            seed=cfg.seed,
+            device="auto",
+        )
 
+    # 4. Eğitim Süreci
     reward_logger = EpisodeRewardLogger()
-
     half_name = f"{cfg.save_half_name}_{env_tag}"
     final_name = f"{cfg.save_final_name}_{env_tag}"
 
     try:
-        # 1. Aşama: Yarısına kadar eğit ve kaydet
         if save_half_at > 0:
             print(f"[INFO] Training phase 1: 0 to {save_half_at}")
             model.learn(total_timesteps=save_half_at, callback=reward_logger)
             model.save(models_dir / half_name)
 
-        # 2. Aşama: Kalan kısmı tamamla
         remaining = total_timesteps - save_half_at
         if remaining > 0:
             print(f"[INFO] Training phase 2: {save_half_at} to {total_timesteps}")
-            model.learn(total_timesteps=remaining, callback=reward_logger)
+            model.learn(total_timesteps=remaining, callback=reward_logger, reset_num_timesteps=False)
 
         model.save(models_dir / final_name)
 
@@ -140,7 +148,7 @@ def main() -> None:
             pass
         env.close()
 
-    # Ödül grafiğini çiz
+    # 5. Görselleştirme
     if reward_logger.episode_rewards:
         plot_rewards(
             reward_logger.episode_rewards,
@@ -148,7 +156,7 @@ def main() -> None:
         )
 
     print(f"\n[SUCCESS] Training finished for {cfg.env_id}.")
-    print(f"- Final Model: {models_dir / final_name}.zip")
+    print(f"- Final Model Saved At: {models_dir / final_name}.zip")
         
   
 if __name__ == "__main__":

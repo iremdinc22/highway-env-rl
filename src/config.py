@@ -37,11 +37,10 @@ class TrainConfig:
         if env_id == "parking-v0":
             return replace(
                 config, 
-                total_timesteps=1_000_000, # En az 1 milyon yapmalısın
-                save_half_at=500_000,
-                batch_size=256,            # 128'den 256'ya çıkardık (daha kararlı öğrenme)
-                ent_coef=0.005,            # 0.02'den 0.005'e düşürdük (titremeyi azaltır)
-                learning_rate=1e-4         # 5e-4'ten 1e-4'e düşürdük (hassas park için)
+                total_timesteps=500_000,   # Sadece 500k daha ekliyoruz
+                batch_size=512,            # Gradyanları pürüzsüzleştirmek için artırdık
+                ent_coef=0.001,            # Gereksiz rastgele hareketleri bitiriyoruz
+                learning_rate=5e-5         # Çok düşük hızda hata ayıklama (fine-tuning)
             )
         return config
 

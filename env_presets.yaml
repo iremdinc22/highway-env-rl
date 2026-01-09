@@ -22,8 +22,8 @@ parking-v0:
   simulation_frequency: 15
   lanes_count: 2
   vehicles_count: 0
-  high_speed_reward: 0.2    # 0'dı, 0.2 yaptık (yavaş gitme sorununu çözer)
-  collision_reward: -20     # -5'ti, -20 yaptık (duvara çarpmayı ağır cezalandırır)
+  collision_reward: -30     # Cezayı daha da artırdık (Duvar artık lav gibi olmalı)
+  high_speed_reward: 0.4    # Yavaşlık sorununu çözmek için teşviki artırdık
 
 racetrack-v0:
   duration: 80
