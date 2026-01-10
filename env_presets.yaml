@@ -17,7 +17,7 @@ intersection-v0:
   vehicles_count: 30
 
 parking-v0:
-  duration: 80              # Süreyi 100'den 80'e indirdik (daha atik olması için)
+  duration: 100              # Süreyi 100'den 80'e indirdik (daha atik olması için)
   policy_frequency: 5
   simulation_frequency: 15
   lanes_count: 2

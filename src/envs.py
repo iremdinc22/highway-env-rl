@@ -45,11 +45,11 @@ def make_env(
         # Değişken isimlerini wrapper (ParkingRewardShaping) ile eşitledik
         env = ParkingRewardShaping(
             env,
-            w_dist=2.0,            # Eski w_progress yerine
-            w_alignment=1.0,       # Yeni eklenen açısal hizalanma
-            collision_penalty=20.0, # 80 çok yüksekti, PPO için 20 idealdir
-            success_bonus=20.0,
-            speed_threshold=0.3    # Araç gerçekten durduğunda bonus alsın
+            w_dist=0.0005,            # 0.01 değil, 0.0005 (Çok çok küçük)
+            w_alignment=0.0005,       # 0.1 değil, 0.0005
+            collision_penalty=0.1,    # Cezayı da küçült ki ajan korkup durmasın
+            success_bonus=10.0,       # TEK HEDEF BU OLSUN
+            speed_threshold=0.5
         )
 
     # 🔹 Seeding
@@ -58,3 +58,6 @@ def make_env(
     env.observation_space.seed(seed)
 
     return env
+
+
+

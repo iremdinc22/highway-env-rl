@@ -16,11 +16,11 @@ class ParkingRewardShaping(gym.Wrapper):
     def __init__(
         self,
         env: gym.Env,
-        w_dist: float = 0.2,
-        w_alignment: float = 0.2,
-        collision_penalty: float = 5.0,
-        success_bonus: float = 10.0,
-        speed_threshold: float = 0.3
+        w_dist: float = 0.0005,      # 0.2 -> 0.0005 yapıldı
+        w_alignment: float = 0.0005, # 0.2 -> 0.0005 yapıldı
+        collision_penalty: float = 0.5,
+        success_bonus: float = 50.0, # Sadece park ederse ödül alsın
+        speed_threshold: float = 0.5
     ):
         super().__init__(env)
         self.w_dist = w_dist
@@ -61,7 +61,7 @@ class ParkingRewardShaping(gym.Wrapper):
 
         # 5. Başarı Bonusu
         # Mesafe çok azsa ve araç durma noktasındaysa (speed < threshold)
-        is_success = dist < 0.5 and velocity < self.speed_threshold
+        is_success = dist < 0.1 and velocity < self.speed_threshold
         if is_success:
             shaped_reward += self.success_bonus
             # İsteğe bağlı: Başarı durumunda bölümü bitirebiliriz
