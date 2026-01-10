@@ -37,10 +37,10 @@ class TrainConfig:
         if env_id == "parking-v0":
             return replace(
                 config, 
-                learning_rate=3e-4,   
-                batch_size=64,        
-                ent_coef=0.05,        # Keşif yapması için bunu 0.05 yap (Rastgeleliği artır)
-                total_timesteps=500_000
+                learning_rate=5e-6,   # Hızı yarıya düşür (çok hassas ayar)
+                batch_size=128,           
+                ent_coef=0.0,         # Keşfi tamamen kapat (titremeyi bitirir)
+                total_timesteps=250_000 # 500k + 200k ince ayar
             )
         
         return config

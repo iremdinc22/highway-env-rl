@@ -40,16 +40,15 @@ def make_env(
     # 🔹 Base environment
     env = gym.make(env_id, config=cfg, render_mode=render_mode)
 
-    # 🔹 Reward shaping
+    # Reward shaping (only parking-v0)
     if env_id == "parking-v0":
-        # Değişken isimlerini wrapper (ParkingRewardShaping) ile eşitledik
         env = ParkingRewardShaping(
             env,
-            w_dist=0.0005,            # 0.01 değil, 0.0005 (Çok çok küçük)
-            w_alignment=0.0005,       # 0.1 değil, 0.0005
-            collision_penalty=0.1,    # Cezayı da küçült ki ajan korkup durmasın
-            success_bonus=10.0,       # TEK HEDEF BU OLSUN
-            speed_threshold=0.5
+            w_dist=0.01,            # istersen 0.001 yapıp küçültebilirsin
+            w_alignment=0.1,        # Düz durmayı ödüllendir
+            collision_penalty=0.1,  # Cezayı azalt
+            success_bonus=200.0,    # Başarı bonusu
+            speed_threshold=0.3,    # Park edince durmasını iste
         )
 
     # 🔹 Seeding
