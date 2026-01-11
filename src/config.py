@@ -34,14 +34,26 @@ class TrainConfig:
     def get_config(cls, env_id: str, **kwargs) -> TrainConfig:
         config = cls(env_id=env_id, **kwargs)
         
+        # Parking Ayarları
         if env_id == "parking-v0":
             return replace(
                 config, 
-                learning_rate=5e-6,   # Hızı yarıya düşür (çok hassas ayar)
+                learning_rate=5e-6,
                 batch_size=128,           
-                ent_coef=0.0,         # Keşfi tamamen kapat (titremeyi bitirir)
-                total_timesteps=250_000 # 500k + 200k ince ayar
+                ent_coef=0.0,
+                total_timesteps=250_000
             )
+        
+        # 🔹 Intersection Ayarları
+        if env_id == "intersection-v0":
+            return replace(
+                config, 
+                total_timesteps=1_000_000, 
+                learning_rate=1e-4,
+                batch_size=128,
+                ent_coef=0.01  # 🔹 0.0 yerine 0.01 yaparak ajanın "daha güvenli" manevralar aramasını sağlıyoruz
+            )
+            
         
         return config
     

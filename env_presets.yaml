@@ -9,12 +9,11 @@ default:
 merge-v0:
   vehicles_count: 35
 
-roundabout-v0:
-  vehicles_count: 30
-  #offroad_terminal: True 
-
 intersection-v0:
-  vehicles_count: 30
+  vehicles_count: 15    # Başta sakin trafikle başlasın
+  duration: 60          # Geçmesi için yeterli süre
+  collision_reward: -15 # -1'den -15'e indirdik (kaza yapmak artık çok pahalı)
+  arrived_reward: 10    # Hedefe varınca alacağı ödül
 
 parking-v0:
   duration: 100              # Süreyi 100'den 80'e indirdik (daha atik olması için)
