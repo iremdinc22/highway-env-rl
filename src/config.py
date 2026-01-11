@@ -54,6 +54,17 @@ class TrainConfig:
                 ent_coef=0.01  # 🔹 0.0 yerine 0.01 yaparak ajanın "daha güvenli" manevralar aramasını sağlıyoruz
             )
             
+            
+            # 🔹 Roundabout Ayarları
+        if env_id == "roundabout-v0":
+            return replace(
+                config, 
+                total_timesteps=1_000_000,  # 👈 Mevcut 800k bitti, üzerine 200k ekliyoruz
+                learning_rate=5e-5,         # 👈 Hızı düşürdük (2e-4 -> 5e-5), bildiği manevraları unutmasın
+                batch_size=128,
+                ent_coef=0.01               # Keşif payı kalsın ki gaza basmayı denesin
+            )
+            
         
         return config
     

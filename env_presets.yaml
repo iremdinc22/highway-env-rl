@@ -9,6 +9,15 @@ default:
 merge-v0:
   vehicles_count: 35
 
+roundabout-v0:
+  vehicles_count: 20         
+  duration: 80               # 👈 Süreyi 60'tan 80'e çıkaralım ki kavşak sonrası yolu görebilsin
+  collision_reward: -15      
+  high_speed_reward: 0.8     # 👈 0.5'ten 0.8'e artırdık (hızlı gitmek artık çok daha karlı)
+  on_road_reward: 0.3        # 👈 0.2'den 0.3'e artırdık (yolda kaldığı her an değerli)
+  arrived_reward: 5          # 👈 Kavşak çıkış ödülünü çok yüksek tutma ki oraya gelince "işim bitti" demesin
+
+
 intersection-v0:
   vehicles_count: 15    # Başta sakin trafikle başlasın
   duration: 60          # Geçmesi için yeterli süre
@@ -30,3 +39,6 @@ racetrack-v0:
   simulation_frequency: 30
   lanes_count: 4
   vehicles_count: 30
+
+
+  
