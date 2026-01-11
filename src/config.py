@@ -59,10 +59,10 @@ class TrainConfig:
         if env_id == "roundabout-v0":
             return replace(
                 config, 
-                total_timesteps=1_000_000,  # 👈 Mevcut 800k bitti, üzerine 200k ekliyoruz
-                learning_rate=5e-5,         # 👈 Hızı düşürdük (2e-4 -> 5e-5), bildiği manevraları unutmasın
+                total_timesteps=1_000_000,  #
+                learning_rate=5e-5,         # 👈 Hızı daha da düşürdük (5e-5 -> 3e-5), usta manevraları asla bozulmasın
                 batch_size=128,
-                ent_coef=0.01               # Keşif payı kalsın ki gaza basmayı denesin
+                ent_coef=0.01  # 👈 Keşif payını azalttık, artık öğrendiği yola (asfalta) sadık kalsın
             )
             
         
