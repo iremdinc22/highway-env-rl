@@ -64,8 +64,17 @@ class TrainConfig:
                 batch_size=128,
                 ent_coef=0.01  # 👈 Keşif payını azalttık, artık öğrendiği yola (asfalta) sadık kalsın
             )
-            
         
+            # 🔹 Racetrack Ayarları (Hız ve Keskin Viraj Kontrolü)
+        if env_id == "racetrack-v0":
+            return replace(
+                config, 
+                total_timesteps=1_200_000,  # 👈 1.2M adım, pürüzsüzleşmesi için gereken süre.
+                learning_rate=3e-4,         # Standart öğrenme hızı.
+                batch_size=128,             # Daha stabil ve tutarlı güncellemeler.
+                ent_coef=0.01               # Başlangıçta farklı sürüş çizgilerini keşfetsin.
+            )
+            
         return config
     
     

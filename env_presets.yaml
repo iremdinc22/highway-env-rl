@@ -35,11 +35,19 @@ parking-v0:
   high_speed_reward: 0.4    # Yavaşlık sorununu çözmek için teşviki artırdık
 
 racetrack-v0:
-  duration: 80
-  policy_frequency: 10
-  simulation_frequency: 30
-  lanes_count: 4
-  vehicles_count: 30
+  duration: 100
+  lanes_count: 1
+  vehicles_count: 0           # 👈 Önce bomboş pistte pürüzsüz dönmeyi ezberlesin.
+  simulation_frequency: 15    # Akıcı bir fizik simülasyonu.
+  policy_frequency: 5         # 👈 DÜŞÜK FREKANS: Saniyede sadece 5 karar. Bu, direksiyonu sürekli sallamasını imkansız hale getirir.
+  collision_reward: -30       # Sert kaza cezası.
+  on_lane_reward: 0.01        # 👈 TİTREMENİN İLACI: Şeridin içinde kalması yeterli, merkeze gelmesi için baskı yapmıyoruz.
+  high_speed_reward: 0.3      # Hız ödülünü düşük tuttuk, önce pürüzsüz sürmeyi önceliklesin.
+
+  
+
+  
 
 
+  
   
