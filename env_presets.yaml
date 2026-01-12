@@ -35,16 +35,18 @@ parking-v0:
   high_speed_reward: 0.4    # Yavaşlık sorununu çözmek için teşviki artırdık
 
 racetrack-v0:
-  duration: 100
+  duration: 120               # 👈 Biraz artırdık, SAC'ın pisti tam tur dönüp veri toplaması için zamanı olsun.
   lanes_count: 1
-  vehicles_count: 0           # 👈 Önce bomboş pistte pürüzsüz dönmeyi ezberlesin.
-  simulation_frequency: 15    # Akıcı bir fizik simülasyonu.
-  policy_frequency: 5         # 👈 DÜŞÜK FREKANS: Saniyede sadece 5 karar. Bu, direksiyonu sürekli sallamasını imkansız hale getirir.
-  collision_reward: -30       # Sert kaza cezası.
-  on_lane_reward: 0.01        # 👈 TİTREMENİN İLACI: Şeridin içinde kalması yeterli, merkeze gelmesi için baskı yapmıyoruz.
-  high_speed_reward: 0.3      # Hız ödülünü düşük tuttuk, önce pürüzsüz sürmeyi önceliklesin.
+  vehicles_count: 10           
+  simulation_frequency: 15    
+  policy_frequency: 5         
+  collision_reward: -30       
+  on_lane_reward: 0.01        
+  high_speed_reward: 0.4      # 👈 0.3'ten 0.4'e çektik, SAC hızı daha dengeli yönetir, biraz daha teşvik iyidir.
+  # observation:                # 👈 Eğer hata alırsan bunu ekleyebilirsin:
+  #   type: Kinematics         # SAC genellikle sayısal (Kinematics) veride daha pürüzsüzdür.
 
-  
+
 
   
 

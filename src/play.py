@@ -10,6 +10,7 @@ from gymnasium.wrappers import RecordVideo
 import highway_env  # noqa: F401
 import yaml
 from stable_baselines3 import PPO
+from stable_baselines3 import SAC
 
 
 def load_env_presets(yaml_path: Path) -> Dict[str, Dict[str, Any]]:
@@ -87,10 +88,21 @@ def main() -> None:
         name_prefix=args.env_id,
     )
 
-    # ✅ Load model
+    # Algoritmayı dosya adına göre otomatik seç ve yükle
     model_path = normalize_model_path(args.model_path)
-    model = PPO.load(model_path)
-
+    
+    if "sac" in model_path.lower():
+        print(f"[INFO] SAC modeli tespit edildi, SAC ile yükleniyor...")
+        model = SAC.load(model_path)
+    elif "ppo" in model_path.lower():
+        print(f"[INFO] PPO modeli tespit edildi, PPO ile yükleniyor...")
+        model = PPO.load(model_path)
+    else:
+        # Eğer dosya adında ikisi de yoksa varsayılan olarak PPO dene
+        print(f"[WARNING] Algoritma tespit edilemedi, varsayılan PPO deneniyor...")
+        model = PPO.load(model_path)
+        
+        
     obs, _ = env.reset()
     done = False
 
@@ -107,3 +119,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

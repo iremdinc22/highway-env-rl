@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Sequence, Union
 
 import yaml
-from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
+from stable_baselines3 import PPO, SAC  # 👈 SAC buraya eklendi
 from gymnasium.spaces import Dict as DictSpace
 
 from src.config import TrainConfig
@@ -96,33 +96,52 @@ def main() -> None:
     print(f"[INFO] batch_size={cfg.batch_size}, ent_coef={cfg.ent_coef}")
 
     if final_model_path.exists():
-        # 🔹 RESUME: Eski modeli yükle, yeni parametreleri uygula
+        # 🔹 RESUME: Eski modeli yükle
         print(f"[INFO] Eski model bulundu: {final_model_path}. Uzerine egitiliyor...")
-        model = PPO.load(
-            final_model_path, 
-            env=env, 
-            learning_rate=cfg.learning_rate, 
-            ent_coef=cfg.ent_coef,
-            custom_objects={"batch_size": cfg.batch_size}
-        )
+        if cfg.algorithm == "SAC":
+            model = SAC.load(final_model_path, env=env, learning_rate=cfg.learning_rate)
+        else:
+            model = PPO.load(
+                final_model_path, 
+                env=env, 
+                learning_rate=cfg.learning_rate, 
+                ent_coef=cfg.ent_coef,
+                custom_objects={"batch_size": cfg.batch_size}
+            )
     else:
-        # 🔹 START: Yeni model oluştur
-        print("[INFO] Eski model bulunamadı. SIFIRDAN başlanıyor...")
-        model = PPO(
-            policy,
-            env,
-            learning_rate=cfg.learning_rate,
-            gamma=cfg.gamma,
-            n_steps=cfg.n_steps,
-            batch_size=cfg.batch_size,
-            n_epochs=cfg.n_epochs,
-            clip_range=cfg.clip_range,
-            gae_lambda=cfg.gae_lambda,
-            ent_coef=cfg.ent_coef,
-            verbose=1,
-            seed=cfg.seed,
-            device="auto",
-        )
+        # 🔹 START: Yeni model oluştur (Seçilen Algoritmaya Göre)
+        print(f"[INFO] Eski model bulunamadı. SIFIRDAN {cfg.algorithm} başlanıyor...")
+        if cfg.algorithm == "SAC":
+            model = SAC(
+                policy, 
+                env, 
+                verbose=1, 
+                seed=cfg.seed,
+                learning_rate=cfg.learning_rate,
+                buffer_size=cfg.buffer_size,
+                learning_starts=cfg.learning_starts,
+                batch_size=cfg.batch_size,
+                tau=cfg.tau,
+                gamma=cfg.gamma,
+                ent_coef=cfg.ent_coef,
+                device="auto"
+            )
+        else:
+            model = PPO(
+                policy,
+                env,
+                learning_rate=cfg.learning_rate,
+                gamma=cfg.gamma,
+                n_steps=cfg.n_steps,
+                batch_size=cfg.batch_size,
+                n_epochs=cfg.n_epochs,
+                clip_range=cfg.clip_range,
+                gae_lambda=cfg.gae_lambda,
+                ent_coef=cfg.ent_coef,
+                verbose=1,
+                seed=cfg.seed,
+                device="auto",
+            )
 
     # 4. Eğitim Süreci
     reward_logger = EpisodeRewardLogger()
